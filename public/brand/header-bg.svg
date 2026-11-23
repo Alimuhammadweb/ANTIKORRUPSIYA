@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 260" preserveAspectRatio="xMaxYMax slice">
+  <defs>
+    <linearGradient id="b" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#a9c7f3" stop-opacity=".55"/><stop offset="1" stop-color="#4f78b8" stop-opacity=".22"/></linearGradient>
+    <linearGradient id="t" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7fb08a" stop-opacity=".35"/><stop offset="1" stop-color="#2f6a4a" stop-opacity=".2"/></linearGradient>
+  </defs>
+  <g fill="url(#t)"><circle cx="70" cy="190" r="48"/><circle cx="125" cy="205" r="40"/><circle cx="800" cy="195" r="46"/><circle cx="860" cy="210" r="38"/></g>
+  <g fill="url(#b)">
+    <rect x="150" y="135" width="165" height="125"/><rect x="585" y="135" width="165" height="125"/>
+    <polygon points="318,112 582,112 450,52"/><rect x="310" y="112" width="280" height="16"/>
+    <rect x="300" y="236" width="300" height="10"/><rect x="288" y="246" width="324" height="14"/>
+    <g>
+      <rect x="328" y="128" width="14" height="108"/><rect x="362" y="128" width="14" height="108"/><rect x="396" y="128" width="14" height="108"/><rect x="430" y="128" width="14" height="108"/>
+      <rect x="456" y="128" width="14" height="108"/><rect x="490" y="128" width="14" height="108"/><rect x="524" y="128" width="14" height="108"/><rect x="558" y="128" width="14" height="108"/>
+    </g>
+  </g>
+  <g fill="#0f2747" fill-opacity=".35">
+    <rect x="170" y="155" width="16" height="30"/><rect x="205" y="155" width="16" height="30"/><rect x="240" y="155" width="16" height="30"/><rect x="275" y="155" width="16" height="30"/>
+    <rect x="610" y="155" width="16" height="30"/><rect x="645" y="155" width="16" height="30"/><rect x="680" y="155" width="16" height="30"/><rect x="715" y="155" width="16" height="30"/>
+    <rect x="170" y="205" width="16" height="30"/><rect x="205" y="205" width="16" height="30"/><rect x="240" y="205" width="16" height="30"/><rect x="275" y="205" width="16" height="30"/>
+    <rect x="610" y="205" width="16" height="30"/><rect x="645" y="205" width="16" height="30"/><rect x="680" y="205" width="16" height="30"/><rect x="715" y="205" width="16" height="30"/>
+  </g>
+  <g><rect x="448" y="6" width="3" height="48" fill="#cfe0ff" fill-opacity=".6"/><rect x="451" y="8" width="34" height="8" fill="#2aa1d6" fill-opacity=".7"/><rect x="451" y="16" width="34" height="7" fill="#fff" fill-opacity=".7"/><rect x="451" y="23" width="34" height="7" fill="#33a85a" fill-opacity=".7"/></g>
+</svg>
