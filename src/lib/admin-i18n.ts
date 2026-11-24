@@ -1,12 +1,9 @@
-import { cookies } from "next/headers";
-import { LANGS, type L } from "./i18n";
+import type { L } from "./i18n";
 import { DICT, type AKey } from "./admin-dict";
 export { type AKey };
 export const ADMIN_LANG_COOKIE = "alang";
-export async function adminLang(): Promise<L> {
-  const v = (await cookies()).get(ADMIN_LANG_COOKIE)?.value;
-  return (LANGS as readonly string[]).includes(v ?? "") ? (v as L) : "uz";
-}
+/** The admin panel is Uzbek Cyrillic only (DICT.uz). */
+export async function adminLang(): Promise<L> { return "uz"; }
 export type TFn = (k: AKey | (string & {}), vars?: Record<string, string | number>) => string;
 export const makeT = (lang: L): TFn => (k, vars) => {
   let s = (DICT[lang] as Record<string, string>)[k] ?? (DICT.en as Record<string, string>)[k] ?? k;

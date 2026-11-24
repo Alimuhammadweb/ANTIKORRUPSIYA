@@ -3,7 +3,7 @@ import { ArrowDown, ArrowUp } from "lucide-react";
 import { db } from "@/lib/db";
 import { requirePerm } from "@/lib/auth";
 import { adminT } from "@/lib/admin-i18n";
-import { loc, LANGS, LABEL } from "@/lib/i18n";
+import { loc } from "@/lib/i18n";
 import { Flash, PageHead } from "@/components/admin/bits";
 import { Button } from "@/components/ui/button";
 import { Input, Select } from "@/components/ui/field";
@@ -20,7 +20,7 @@ export default async function Homepage({ searchParams }: { searchParams: Promise
   const used = new Set(secs.flatMap((s) => (s.categoryId ? [s.categoryId] : [])));
   return (
     <div className="max-w-4xl">
-      <PageHead title={t("nav_homepage")}>{LANGS.map((l) => <Link key={l} href={`/${l}`} target="_blank" className="rounded-lg border border-rule bg-surface px-3 py-1.5 text-xs font-semibold shadow-sm transition-colors hover:bg-band">{t("preview")} {LABEL[l]}</Link>)}</PageHead>
+      <PageHead title={t("nav_homepage")}><Link href="/uz" target="_blank" className="rounded-lg border border-rule bg-surface px-3 py-1.5 text-xs font-semibold shadow-sm transition-colors hover:bg-band">{t("preview")}</Link></PageHead>
       <p className="mb-4 text-sm text-mute">{t("homepage_help")}</p><Flash sp={sp} />
       {!secs.length && <form action={ensureDefaults} className="mb-4"><Button variant="primary">{t("create_default_sections")}</Button></form>}
       <div className="space-y-3">{secs.map((s, i) => (

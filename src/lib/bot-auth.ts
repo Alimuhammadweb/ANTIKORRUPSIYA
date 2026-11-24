@@ -13,3 +13,14 @@ export async function botGate(req: NextRequest): Promise<NextResponse | null> {
   if (!secret.length || given.length !== secret.length || !timingSafeEqual(given, secret)) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
   return null;
 }
+
+/**
+ * Second gate for routes that publish: the Telegram user id sent in "X-Telegram-User-Id" must be listed in TELEGRAM_ADMIN_IDS
+ * (comma-separated) on the SERVER. The check never relies on the bot's own allowlist. An empty list denies everyone.
+ */
+export function telegramAdmin(req: NextRequest): { id: string } | NextResponse {
+  const allowed = (process.env.TELEGRAM_ADMIN_IDS ?? "").split(",").map((s) => s.trim()).filter((s) => /^\d{1,20}$/.test(s));
+  const id = (req.headers.get("x-telegram-user-id") ?? "").trim();
+  if (!/^\d{1,20}$/.test(id) || !allowed.includes(id)) return NextResponse.json({ error: "forbidden", message: "this Telegram user may not publish" }, { status: 403 });
+  return { id };
+}

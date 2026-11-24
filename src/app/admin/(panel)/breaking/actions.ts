@@ -6,15 +6,17 @@ import { requirePerm } from "@/lib/auth";
 import { logActivity } from "@/lib/activity";
 import { fromLocalInput } from "@/lib/time";
 
-const S = z.object({ text: z.string().trim().min(1).max(240), lang: z.enum(["uz", "en", "ru"]), sortOrder: z.coerce.number().int().min(0).max(9999).default(0) });
+const S = z.object({ text: z.string().trim().min(1).max(240), sortOrder: z.coerce.number().int().min(0).max(9999).default(0) });
 export async function saveBreaking(f: FormData) {
   const u = await requirePerm("breaking.manage"); const id = Number(f.get("id")) || 0, back = id ? `/admin/breaking?edit=${id}` : "/admin/breaking";
   const p = S.safeParse(Object.fromEntries(f)); if (!p.success) redirect(`${back}${id ? "&" : "?"}e=invalid`);
   const startsAt = fromLocalInput(String(f.get("startsAt") ?? "")) ?? new Date(), endsAt = fromLocalInput(String(f.get("endsAt") ?? ""));
   if (endsAt && endsAt <= startsAt) redirect(`${back}${id ? "&" : "?"}e=dates`);
   const articleId = Number(f.get("articleId")) || null;
-  if (articleId && !(await db.translation.findFirst({ where: { articleId, lang: p.data.lang } }))) redirect(`${back}${id ? "&" : "?"}e=article_lang`);
-  const data = { ...p.data, startsAt, endsAt, articleId, active: f.get("active") === "on" };
+  if (articleId && !(await db.article.findUnique({ where: { id: articleId }, select: { id: true } }))) redirect(`${back}${id ? "&" : "?"}e=invalid`);
+  // one language: new items are Uzbek; an old item keeps whatever language it was stored with
+  const prev = id ? await db.breakingNews.findUnique({ where: { id }, select: { lang: true } }) : null;
+  const data = { ...p.data, lang: prev?.lang ?? ("uz" as const), startsAt, endsAt, articleId, active: f.get("active") === "on" };
   if (id) await db.breakingNews.update({ where: { id }, data }); else await db.breakingNews.create({ data });
   await logActivity(u.id, `breaking news ${id ? "updated" : "created"}: ${p.data.text.slice(0, 60)}`); redirect("/admin/breaking?ok=1");
 }

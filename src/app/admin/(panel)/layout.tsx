@@ -1,13 +1,11 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { Suspense } from "react";
 import { ExternalLink, LogOut } from "lucide-react";
 import { requirePerm, endSession } from "@/lib/auth";
 import { can, type Perm } from "@/lib/permissions";
 import { adminT } from "@/lib/admin-i18n";
 import { AdminI18nProvider } from "@/components/admin/i18n-client";
-import { AdminLangSwitch } from "@/components/admin/admin-lang";
 import { AdminDrawer, AdminNav, type NavGroup } from "@/components/admin/admin-nav";
 import type { IconName } from "@/components/admin/nav-icons";
 import { ThemeToggle } from "@/components/theme-toggle";
@@ -43,11 +41,10 @@ export default async function Panel({ children }: { children: React.ReactNode })
         </aside>
         <div className="min-w-0">
           <header className="sticky top-0 z-30 flex h-14 items-center gap-2 border-b border-rule bg-surface/90 px-4 backdrop-blur lg:px-8">
-            <AdminDrawer groups={groups} label={t("open_menu")} close={t("close")} footer={<div className="space-y-4"><User /><Suspense><AdminLangSwitch onDark /></Suspense></div>} />
+            <AdminDrawer groups={groups} label={t("open_menu")} close={t("close")} footer={<div className="space-y-4"><User /></div>} />
             <img src="/brand/logo.png" alt="" aria-hidden className="h-6 w-auto rounded bg-navy px-1.5 py-0.5 lg:hidden" />
             <div className="ml-auto flex items-center gap-2">
               <Link href="/uz" target="_blank" className="hidden items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-medium text-mute transition-colors hover:bg-band hover:text-ink sm:inline-flex">{t("view_site")}<ExternalLink className="size-3.5" aria-hidden /></Link>
-              <div className="hidden lg:block"><Suspense><AdminLangSwitch /></Suspense></div>
               <ThemeToggle label={t("switch_theme")} onDark={false} />
             </div>
           </header>

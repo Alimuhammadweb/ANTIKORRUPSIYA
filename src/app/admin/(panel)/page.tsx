@@ -1,32 +1,49 @@
+import Link from "next/link";
+import type { Prisma } from "@prisma/client";
 import { db } from "@/lib/db";
 import { requirePerm } from "@/lib/auth";
+import { can } from "@/lib/permissions";
 import { adminT } from "@/lib/admin-i18n";
-import { parseRange, viewsByDay, topArticles, topCategories, viewsByFormat } from "@/lib/analytics";
-import { loc, type L } from "@/lib/i18n";
-import { DailyChart, BarList } from "@/components/charts";
+import { viewsByDay, parseRange } from "@/lib/analytics";
+import { DailyChart } from "@/components/charts";
 import { PageHead } from "@/components/admin/bits";
-import { Button } from "@/components/ui/button";
+import { FileText, Eye, FilePen, Hourglass, CalendarClock, Newspaper } from "lucide-react";
 import { Card, CardBody, CardHeader } from "@/components/ui/card";
-import { Input } from "@/components/ui/field";
-import Link from "next/link";
+import { fmtDateTime, type L } from "@/lib/i18n";
 
-export default async function Analytics({ searchParams }: { searchParams: Promise<{ from?: string; to?: string; days?: string }> }) {
-  await requirePerm("analytics.view"); const { t, lang } = await adminT(); const sp = await searchParams;
-  const preset = Number(sp.days) || 0, r = preset ? parseRange(undefined, undefined, preset) : parseRange(sp.from, sp.to, 30), ymd = (d: Date) => d.toISOString().slice(0, 10);
-  const [daily, top, cats, fmts, life] = await Promise.all([viewsByDay(r), topArticles(r, 10), topCategories(r), viewsByFormat(r), db.article.aggregate({ _sum: { views: true }, _count: true })]);
-  const total = daily.reduce((s, d) => s + d.views, 0), best = daily.reduce((m, d) => (d.views > m.views ? d : m), { day: "—", views: 0 });
+export default async function Dashboard() {
+  const u = await requirePerm(); const { t, lang } = await adminT();
+  const scope: Prisma.ArticleWhereInput = can(u, "article.editAny") ? {} : { authorId: u.id }; // journalists see their own numbers
+  const wide = can(u, "article.editAny"), range = parseRange(undefined, undefined, 30);
+  const [total, published, drafts, pending, scheduled, views, top, recent, log, daily] = await Promise.all([
+    db.article.count({ where: scope }), db.article.count({ where: { ...scope, status: "PUBLISHED" } }), db.article.count({ where: { ...scope, status: "DRAFT" } }),
+    db.article.count({ where: { ...scope, status: "PENDING" } }), db.article.count({ where: { ...scope, status: "SCHEDULED" } }),
+    db.article.aggregate({ where: scope, _sum: { views: true } }),
+    db.article.findMany({ where: { ...scope, status: "PUBLISHED" }, orderBy: { views: "desc" }, take: 5, include: { translations: { take: 1, orderBy: { lang: "desc" } } } }),
+    db.article.findMany({ where: scope, orderBy: { createdAt: "desc" }, take: 5, include: { translations: { take: 1, orderBy: { lang: "desc" } } } }),
+    db.activity.findMany({ where: wide ? {} : { userId: u.id }, orderBy: { createdAt: "desc" }, take: 8, include: { user: true } }),
+    viewsByDay(range),
+  ]);
+  const sum = (n: number) => daily.slice(-n).reduce((s, r) => s + r.views, 0);
+  const stats = [["stat_total", total, FileText, "text-sky-600 bg-sky-500/10"], ["stat_published", published, Newspaper, "text-emerald-600 bg-emerald-500/10"], ["stat_drafts", drafts, FilePen, "text-slate-500 bg-slate-500/10"], ["stat_pending", pending, Hourglass, "text-amber-600 bg-amber-500/10"], ["stat_scheduled", scheduled, CalendarClock, "text-violet-600 bg-violet-500/10"], ["stat_views", views._sum.views ?? 0, Eye, "text-accent-ink bg-accent/15"]] as const;
   return (
-    <div className="max-w-5xl"><PageHead title={t("nav_analytics")} />
-      <form className="mb-5 flex flex-wrap items-end gap-2 rounded-xl border border-rule bg-surface p-3 text-sm font-medium shadow-[var(--shadow-card)]"><label>{t("from")}<Input type="date" name="from" defaultValue={ymd(r.from)} className="mt-1" /></label><label>{t("to")}<Input type="date" name="to" defaultValue={ymd(r.to)} className="mt-1" /></label><Button>{t("apply")}</Button>
-        {[7, 30, 90].map((d) => <Link key={d} href={`/admin/analytics?days=${d}`} className="inline-flex h-10 items-center rounded-lg border border-rule bg-surface px-3 text-xs font-semibold shadow-sm transition-colors hover:bg-band">{t("last_days", { n: d })}</Link>)}</form>
-      <div className="mb-5 grid grid-cols-2 gap-3 md:grid-cols-4">{([["views_period", total], ["avg_daily", Math.round(total / Math.max(1, daily.length))], ["best_day", `${best.views} (${best.day})`], ["views_all_time", life._sum.views ?? 0]] as [string, string | number][]).map(([k, v]) => <div key={k} className="bg-paper p-4"><p className="text-xs text-mute">{t(k)}</p><p className="text-xl font-extrabold tabular-nums">{v}</p></div>)}</div>
-      <Card className="mb-5"><CardHeader>{t("views_over_time")}</CardHeader><CardBody><DailyChart data={daily} label={t("views_over_time")} /></CardBody></Card>
-      <div className="grid gap-5 md:grid-cols-2">
-        <Card><CardHeader>{t("top_articles")}</CardHeader><CardBody>{top.length ? <BarList label={t("top_articles")} rows={top.map((a) => ({ label: a.title, value: a.views, href: `/admin/articles/${a.id}` }))} /> : <p className="text-sm text-mute">{t("nothing_yet")}</p>}</CardBody></Card>
-        <Card><CardHeader>{t("top_categories")}</CardHeader><CardBody>{cats.length ? <BarList label={t("top_categories")} rows={cats.map((c) => ({ label: loc(c.names, lang as L) || c.key, value: c.views }))} /> : <p className="text-sm text-mute">{t("nothing_yet")}</p>}</CardBody></Card>
-        <Card><CardHeader>{t("by_format")}</CardHeader><CardBody>{fmts.length ? <BarList label={t("by_format")} rows={fmts.map((f) => ({ label: t(`format_${f.format}`), value: f.views }))} /> : <p className="text-sm text-mute">{t("nothing_yet")}</p>}</CardBody></Card>
-        <Card><CardHeader>{t("how_counted")}</CardHeader><CardBody><p className="text-sm text-mute">{t("analytics_note")}</p></CardBody></Card>
+    <div className="space-y-6">
+      <PageHead title={t("welcome_back", { name: u.name.split(" ")[0] })} sub={t("nav_dashboard")} />
+      <div className="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-6">{stats.map(([k, v, Icon, tone]) => (
+        <div key={k} className="rounded-xl border border-rule bg-surface p-4 shadow-[var(--shadow-card)]"><span className={`grid size-9 place-items-center rounded-lg ${tone}`}><Icon className="size-[18px]" aria-hidden /></span><p className="mt-4 text-2xl font-extrabold tabular-nums tracking-tight">{v.toLocaleString("ru-RU")}</p><p className="mt-0.5 text-xs font-medium text-mute">{t(k)}</p></div>))}</div>
+      {wide && (
+        <Card><CardHeader>{t("views_30d")}</CardHeader><CardBody>
+          <p className="mb-3 text-sm text-mute">{t("views_summary", { d1: sum(1), d7: sum(7), d30: sum(30) })}</p><DailyChart data={daily} label={t("views_30d")} /></CardBody></Card>)}
+      <div className="grid gap-5 lg:grid-cols-3">
+        <Card><CardHeader>{t("most_viewed")}</CardHeader><CardBody><Rows empty={t("nothing_yet")} rows={top.map((a) => ({ k: a.id, href: `/admin/articles/${a.id}`, text: a.translations[0]?.title ?? `#${a.id}`, meta: String(a.views) }))} /></CardBody></Card>
+        <Card><CardHeader>{t("latest_posts")}</CardHeader><CardBody><Rows empty={t("nothing_yet")} rows={recent.map((a) => ({ k: a.id, href: `/admin/articles/${a.id}`, text: a.translations[0]?.title ?? `#${a.id}`, meta: t(`status_${a.status}`) }))} /></CardBody></Card>
+        <Card><CardHeader>{t("recent_activity")}</CardHeader><CardBody><Rows empty={t("nothing_yet")} rows={log.map((l) => ({ k: l.id, href: l.articleId ? `/admin/articles/${l.articleId}` : undefined, text: `${l.user?.name ?? t("system")}: ${l.action}`, meta: fmtDateTime(l.createdAt, lang as L) }))} /></CardBody></Card>
       </div>
+      {wide && <p className="text-sm"><Link href="/admin/analytics" className="font-semibold text-accent-ink hover:underline">{t("nav_analytics")} →</Link></p>}
     </div>
   );
+}
+function Rows({ rows, empty }: { rows: { k: number; href?: string; text: string; meta: string }[]; empty: string }) {
+  if (!rows.length) return <p className="py-4 text-center text-sm text-mute">{empty}</p>;
+  return <ul className="-my-2 divide-y divide-rule text-sm">{rows.map((r) => <li key={r.k} className="flex justify-between gap-3 py-2.5">{r.href ? <Link href={r.href} className="min-w-0 truncate font-medium hover:text-accent-ink hover:underline">{r.text}</Link> : <span className="min-w-0 truncate">{r.text}</span>}<span className="shrink-0 text-xs tabular-nums text-mute">{r.meta}</span></li>)}</ul>;
 }

@@ -182,6 +182,7 @@ model TelegramSubmission {
   article        Article  @relation(fields: [articleId], references: [id], onDelete: Cascade)
   originalText   String
   mediaGroupId   String?
+  telegramUserId String?
   status         String   @default("RECEIVED") // RECEIVED | DRAFTED | PUBLISHED | REJECTED
   receivedAt     DateTime @default(now())
 

@@ -4,8 +4,7 @@ import { headers } from "next/headers";
 import { limited } from "@/lib/ratelimit";
 import { startSession, currentUser } from "@/lib/auth";
 import { adminT } from "@/lib/admin-i18n";
-import { LANGS, LABEL } from "@/lib/i18n";
-import { setAdminLang } from "../lang-action";
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/field";
 
@@ -13,7 +12,7 @@ export const dynamic = "force-dynamic";
 export const metadata: Metadata = { title: "Sign in — ANTIKORRUPSIYA", robots: { index: false, follow: false } };
 export default async function Login({ searchParams }: { searchParams: Promise<{ error?: string }> }) {
   if (await currentUser()) redirect("/admin");
-  const err = (await searchParams).error, { t, lang } = await adminT();
+  const err = (await searchParams).error, { t } = await adminT();
   async function action(f: FormData) {
     "use server";
     const ip = (await headers()).get("x-forwarded-for")?.split(",")[0].trim() ?? "local", email = String(f.get("email") ?? "").toLowerCase().trim().slice(0, 200);
@@ -38,8 +37,6 @@ export default async function Login({ searchParams }: { searchParams: Promise<{ 
             <label className="block text-sm font-semibold">{t("password")}<Input name="password" type="password" required autoComplete="current-password" className="mt-1.5 h-11 font-normal" /></label>
             <Button variant="primary" className="h-11 w-full text-[15px]">{t("sign_in")}</Button>
           </form>
-          <form action={setAdminLang} className="mt-5 flex justify-center gap-1 text-xs"><input type="hidden" name="back" value="/admin/login" />
-            {LANGS.map((l) => <button key={l} name="lang" value={l} aria-pressed={l === lang} className={`rounded-md px-3 py-1.5 font-semibold transition-colors ${l === lang ? "bg-navy text-white dark:bg-accent dark:text-navy" : "text-mute hover:bg-surface hover:text-ink"}`}>{LABEL[l]}</button>)}</form>
         </div>
       </section>
     </main>

@@ -7,7 +7,6 @@ import { Flash, PageHead } from "@/components/admin/bits";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/field";
 import { Card, CardBody, CardHeader } from "@/components/ui/card";
-import { LANGS, LABEL } from "@/lib/i18n";
 import { addTrending, removeTrending, moveTrending } from "./actions";
 
 export default async function Trending({ searchParams }: { searchParams: Promise<{ q?: string; e?: string; ok?: string }> }) {
@@ -19,7 +18,7 @@ export default async function Trending({ searchParams }: { searchParams: Promise
   const title = (a: (typeof list)[number]) => a.translations[0]?.title ?? `#${a.id}`;
   return (
     <div className="max-w-3xl">
-      <PageHead title={t("nav_trending")}>{LANGS.map((l) => <Link key={l} href={`/${l}/trending`} target="_blank" className="rounded-lg border border-rule bg-surface px-3 py-1.5 text-xs font-semibold shadow-sm transition-colors hover:bg-band">{t("preview")} {LABEL[l]}</Link>)}</PageHead>
+      <PageHead title={t("nav_trending")}><Link href="/uz/trending" target="_blank" className="rounded-lg border border-rule bg-surface px-3 py-1.5 text-xs font-semibold shadow-sm transition-colors hover:bg-band">{t("preview")}</Link></PageHead>
       <p className="mb-4 text-sm text-mute">{t("trending_help")}</p><Flash sp={sp} />
       <Card className="mb-6"><CardHeader>{t("trending_current", { n: list.length })}</CardHeader><CardBody>
         {!list.length && <p className="text-sm text-mute">{t("trending_empty")}</p>}

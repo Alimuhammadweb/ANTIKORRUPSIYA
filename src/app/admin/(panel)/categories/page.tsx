@@ -2,7 +2,7 @@ import Link from "next/link";
 import { db } from "@/lib/db";
 import { requirePerm } from "@/lib/auth";
 import { adminT } from "@/lib/admin-i18n";
-import { loc, LANGS, LABEL } from "@/lib/i18n";
+import { loc } from "@/lib/i18n";
 import { Flash, PageHead } from "@/components/admin/bits";
 import { ConfirmButton } from "@/components/admin/confirm-button";
 import { Button } from "@/components/ui/button";
@@ -22,11 +22,10 @@ export default async function Categories({ searchParams }: { searchParams: Promi
         <Card className="mb-6"><CardHeader>{cur ? t("edit") : t("new_category")}</CardHeader><CardBody>
           <form action={saveCategory} className="space-y-4"><input type="hidden" name="id" value={cur?.id ?? 0} />
             {!cur && <Field label={t("key")} hint={t("key_hint")}><Input name="key" maxLength={60} className="max-w-xs" /></Field>}
-            <div className="grid gap-4 md:grid-cols-3">{LANGS.map((l) => (
-              <fieldset key={l} className="space-y-2 rounded-xl border border-rule p-3"><legend className="px-1 text-xs font-bold">{LABEL[l]}</legend>
-                <Field label={t("name")}><Input name={`name_${l}`} required maxLength={120} defaultValue={g(cur?.names, l)} /></Field>
-                <Field label={t("slug")}><Input name={`slug_${l}`} maxLength={100} defaultValue={g(cur?.slugs, l)} /></Field>
-                <Field label={t("description")}><Textarea name={`desc_${l}`} rows={3} maxLength={600} defaultValue={g(cur?.descriptions, l)} /></Field></fieldset>))}</div>
+            <div className="max-w-xl space-y-3">
+              <Field label={t("name")}><Input name="name_uz" required maxLength={120} defaultValue={g(cur?.names, "uz")} /></Field>
+              <Field label={t("slug")}><Input name="slug_uz" maxLength={100} defaultValue={g(cur?.slugs, "uz")} /></Field>
+              <Field label={t("description")}><Textarea name="desc_uz" rows={3} maxLength={600} defaultValue={g(cur?.descriptions, "uz")} /></Field></div>
             <div className="flex flex-wrap items-center gap-4"><Field label={t("display_order")}><Input type="number" name="order" min={0} defaultValue={cur?.order ?? rows.length} className="w-28" /></Field>
               <label className="flex items-center gap-2 text-sm"><input type="checkbox" name="active" defaultChecked={cur?.active ?? true} />{t("active")}</label></div>
             <div className="flex gap-2"><Button variant="primary">{t("save")}</Button><Link href="/admin/categories" className="inline-flex h-10 items-center rounded-lg border border-rule bg-surface px-4 text-sm font-semibold shadow-sm transition-colors hover:bg-band">{t("cancel")}</Link></div></form></CardBody></Card>)}
