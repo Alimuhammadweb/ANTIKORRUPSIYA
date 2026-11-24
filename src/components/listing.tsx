@@ -16,8 +16,8 @@ export function formatLabel(a: Item, lang: L): string | null {
 export function Meta({ a, lang, className = "" }: { a: Item; lang: L; className?: string }) {
   return (
     <p className={`meta mt-2 flex flex-wrap items-center gap-x-3.5 gap-y-1 ${className}`}>
-      <span className="inline-flex items-center gap-1.5"><CalendarDays className="size-3.5 shrink-0 opacity-80" aria-hidden /><time dateTime={a.publishedAt?.toISOString()}>{fmtDay(a.publishedAt, lang)}</time></span>
-      <span className="inline-flex items-center gap-1.5"><Eye className="size-3.5 shrink-0 opacity-80" aria-hidden /><span>{fmtViews(a.views, lang)}<span className="sr-only"> {T[lang].views}</span></span></span>
+      <span className="inline-flex items-center gap-1.5"><CalendarDays className="size-4 shrink-0 opacity-80" aria-hidden /><time dateTime={a.publishedAt?.toISOString()}>{fmtDay(a.publishedAt, lang)}</time></span>
+      <span className="inline-flex items-center gap-1.5"><Eye className="size-4 shrink-0 opacity-80" aria-hidden /><span>{fmtViews(a.views, lang)}<span className="sr-only"> {T[lang].views}</span></span></span>
     </p>
   );
 }
@@ -76,9 +76,9 @@ export function CardRow({ a, lang, dark, kicker = true, desc, thumb = "w-28 sm:w
 export function SectionHead({ title, more, lang, children }: { title: string; more?: string; lang: L; dark?: boolean; children?: React.ReactNode }) {
   return (
     <div className="mb-5 flex items-center justify-between gap-4">
-      <h2 className="flex items-center gap-3 text-[1.45rem] font-extrabold leading-tight tracking-tight"><span className="h-7 w-1.5 shrink-0 rounded-full bg-accent" aria-hidden />{title}</h2>
+      <h2 className="flex min-w-0 items-center gap-[0.9rem] text-[1.35rem] font-semibold leading-tight tracking-tight lg:text-[1.45rem] 2xl:text-[1.6rem]"><span className="h-[2.05rem] w-1.5 shrink-0 rounded-full bg-gradient-to-b from-accent to-[#f5782c]" aria-hidden />{title}</h2>
       {children}
-      {more && <Link href={more} className="group/more inline-flex shrink-0 items-center gap-1.5 text-sm font-semibold text-ink transition-colors hover:text-brand-ink">{T[lang].viewAll}<ArrowRight className="size-4 transition-transform group-hover/more:translate-x-0.5" aria-hidden /></Link>}
+      {more && <Link href={more} className="group/more inline-flex shrink-0 items-center gap-1.5 whitespace-nowrap text-[15px] font-medium text-ink transition-colors hover:text-brand-ink">{T[lang].viewAll}<ArrowRight className="size-4 transition-transform group-hover/more:translate-x-0.5" aria-hidden /></Link>}
     </div>
   );
 }

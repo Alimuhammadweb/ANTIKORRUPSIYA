@@ -27,8 +27,8 @@ export function LangSwitch({ lang, variant = "dropdown", compact, label = "Langu
   return (
     <div ref={ref} onKeyDown={onKeyDown} onBlur={onBlur} className="relative">
       <button type="button" data-trigger aria-haspopup="menu" aria-expanded={open} aria-label={`${label}: ${NAME[cur]}`} onClick={() => setOpen(!open)}
-        className={`inline-flex h-9 items-center gap-2 rounded-full border border-white/15 bg-white/10 pl-3 pr-2.5 text-sm font-semibold text-white transition-colors hover:border-white/30 hover:bg-white/15 ${open ? "!border-accent/70 bg-white/15" : ""}`}>
-        <Globe className="size-4 text-silver" aria-hidden />{compact ? cur.toUpperCase() : NAME[cur]}<ChevronDown className={`size-4 text-silver transition-transform ${open ? "rotate-180" : ""}`} aria-hidden />
+        className={`inline-flex h-8 items-center gap-2 rounded-full border border-white/20 bg-white/[0.08] pl-3 pr-2.5 text-[14px] font-medium text-white transition-colors hover:border-white/30 hover:bg-white/15 ${open ? "!border-accent/70 bg-white/15" : ""}`}>
+        <Globe className="size-4 text-white" aria-hidden />{compact ? cur.toUpperCase() : NAME[cur]}<ChevronDown className={`size-4 text-white transition-transform ${open ? "rotate-180" : ""}`} aria-hidden />
       </button>
       {open && (
         <div role="menu" aria-label={label} className="menu-panel absolute right-0 top-full z-[60] mt-2 w-52 p-1.5">
