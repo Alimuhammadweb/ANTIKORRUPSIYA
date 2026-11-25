@@ -4,7 +4,7 @@ import { Bell, CalendarDays, Mail, Search } from "lucide-react";
 import { LANGS, T, fmtToday, isLang, loc } from "@/lib/i18n";
 import { db } from "@/lib/db";
 import { getSite } from "@/lib/settings";
-import { slugOf } from "@/lib/queries";
+import { base, slugOf } from "@/lib/queries";
 import { Ticker } from "@/components/ticker";
 import { Suspense } from "react";
 import { LangSwitch } from "@/components/lang-switch";
@@ -18,12 +18,12 @@ export const dynamic = "force-dynamic";
 export function generateStaticParams() { return LANGS.map((lang) => ({ lang })); }
 export default async function LangLayout({ children, params }: { children: React.ReactNode; params: Promise<{ lang: string }> }) {
   const { lang } = await params; if (!isLang(lang)) notFound();
-  const [cats, site] = await Promise.all([db.category.findMany({ where: { active: true }, orderBy: { order: "asc" } }), getSite()]), t = T[lang];
+  const [cats, site, notices] = await Promise.all([db.category.findMany({ where: { active: true }, orderBy: { order: "asc" } }), getSite(), db.article.count({ where: base(lang, { format: "ANNOUNCEMENT" }) }).catch(() => 0)]), t = T[lang];
   // Videos / Interviews are intentionally not part of the public navigation.
   const sections = (["latest", "popular", "trending", "investigations", "announcements"] as const).map((k) => ({ href: `/${lang}/${k}`, text: t[k] }));
   const home = `/${lang}`, allCats = `/${lang}/categories`, links = [{ href: home, text: t.home }, ...sections];
   const topics = cats.map((c) => ({ href: `/${lang}/category/${slugOf(c, lang)}`, text: loc(c.names, lang) }));
-  const social = ([["Telegram", site.telegram], ["Facebook", site.facebook], ["X", site.x], ["YouTube", site.youtube]] as [string, string][]).filter(([, u]) => u);
+  const social = ([["Telegram", site.telegram], ["Facebook", site.facebook], ["X", site.x], ["YouTube", site.youtube], ["Instagram", site.instagram]] as [string, string][]).filter(([, u]) => u);
   const Social = ({ cls = "" }: { cls?: string }) => social.length > 0 ? <ul className={`flex items-center gap-1 ${cls}`} aria-label={t.followUs}>{social.map(([n, u]) => <li key={n}><a href={u} target="_blank" rel="noopener noreferrer" aria-label={n} title={n} className="grid size-9 place-items-center rounded-full text-white/90 transition-colors hover:bg-white/10 hover:text-white"><SocialIcon name={n} className="size-[18px]" /></a></li>)}</ul> : null;
   const Lang = (p: { variant?: "dropdown" | "list"; compact?: boolean }) => <Suspense fallback={<span className="inline-block h-9 w-28" />}><LangSwitch lang={lang} label={t.language} {...p} /></Suspense>;
   return (
@@ -51,7 +51,7 @@ export default async function LangLayout({ children, params }: { children: React
         <div className="border-b border-white/10">
           <div className="wrap flex h-12 items-center justify-between text-[13.5px]">
             <p className="inline-flex items-center gap-2.5 text-white/90"><CalendarDays className="size-[18px]" aria-hidden />{fmtToday(lang)}</p>
-            <div className="flex items-center gap-3"><Social /><Link href={`/${lang}/announcements`} aria-label={t.announcements} title={t.announcements} className="grid size-9 place-items-center rounded-full text-white/90 transition-colors hover:bg-white/10 hover:text-white"><Bell className="size-[18px]" aria-hidden /></Link><span className="h-5 w-px bg-white/20" aria-hidden /><Lang /><ThemeToggle label={t.theme} round /></div>
+            <div className="flex items-center gap-3"><Social /><Link href={`/${lang}/announcements`} aria-label={t.announcements} title={t.announcements} className="relative grid size-9 place-items-center rounded-full text-white/90 transition-colors hover:bg-white/10 hover:text-white"><Bell className="size-[18px]" aria-hidden />{notices > 0 && <span className="absolute -right-0.5 -top-0.5 grid h-4 min-w-4 place-items-center rounded-full bg-breaking px-1 text-[10px] font-bold leading-none text-white ring-2 ring-navy">{notices > 9 ? "9+" : notices}</span>}</Link><span className="h-5 w-px bg-white/20" aria-hidden /><Lang /><ThemeToggle label={t.theme} round /></div>
           </div>
         </div>
         <div className="wrap grid h-[5.75rem] grid-cols-[auto_minmax(0,34rem)_1fr] items-center gap-10">

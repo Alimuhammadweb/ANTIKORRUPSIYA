@@ -73,10 +73,10 @@ export function CardRow({ a, lang, dark, kicker = true, desc, thumb = "w-28 sm:w
   );
 }
 /** Section heading in the portal style: orange bar, title, "View all →". */
-export function SectionHead({ title, more, lang, children }: { title: string; more?: string; lang: L; dark?: boolean; children?: React.ReactNode }) {
+export function SectionHead({ title, more, lang, flush, children }: { title: string; more?: string; lang: L; dark?: boolean; flush?: boolean; children?: React.ReactNode }) {
   return (
     <div className="mb-5 flex items-center justify-between gap-4">
-      <h2 className="flex items-center gap-3 text-[1.45rem] font-extrabold leading-tight tracking-tight"><span className="h-7 w-1.5 shrink-0 rounded-full bg-accent" aria-hidden />{title}</h2>
+      <h2 className="flex items-center gap-3 text-[1.45rem] font-extrabold leading-tight tracking-tight"><span className={`h-7 w-1.5 shrink-0 bg-accent ${flush ? "-ml-5 rounded-r-full" : "rounded-full"}`} aria-hidden />{title}</h2>
       {children}
       {more && <Link href={more} className="group/more inline-flex shrink-0 items-center gap-1.5 text-sm font-semibold text-ink transition-colors hover:text-brand-ink">{T[lang].viewAll}<ArrowRight className="size-4 transition-transform group-hover/more:translate-x-0.5" aria-hidden /></Link>}
     </div>

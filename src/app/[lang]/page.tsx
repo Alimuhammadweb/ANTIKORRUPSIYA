@@ -41,7 +41,7 @@ function SectionCard({ b, title, lang }: { b: HomeBlock; title: string; lang: L 
   const [lead] = b.items, tr = lead.translations[0], t = T[lang];
   return (
     <section className={`${box} flex flex-col overflow-hidden`}>
-      <div className="px-5 pt-5"><SectionHead title={title} more={moreOf(b, lang)} lang={lang} /></div>
+      <div className="px-5 pt-5"><SectionHead title={title} more={moreOf(b, lang)} lang={lang} flush /></div>
       <article className="group relative flex flex-1 flex-col">
         <div className="relative aspect-[16/9]"><Thumb a={lead} lang={lang} ratio="" rounded="rounded-none" className="absolute inset-0 size-full" play={lead.format === "VIDEO"} /></div>
         <div className="p-5"><h3 className="h-sans text-[1.28rem]"><Link href={href(lang, lead)} className="link-line after:absolute after:inset-0">{tr.title}</Link></h3>
