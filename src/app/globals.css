@@ -44,7 +44,7 @@ img { max-width: 100%; }
 
 /* ───────────────────────── Components ───────────────────────── */
 @layer components {
-  .wrap { margin-inline: auto; width: 100%; max-width: 80rem; padding-inline: 1rem; }
+  .wrap { margin-inline: auto; width: 100%; max-width: 93rem; padding-inline: 1rem; } /* 93rem - 2 x 2rem padding = 1424px of content */
   @media (min-width: 640px) { .wrap { padding-inline: 1.5rem; } }
   @media (min-width: 1024px) { .wrap { padding-inline: 2rem; } }
 
@@ -160,3 +160,17 @@ img { max-width: 100%; }
   .menu-panel { background: var(--color-surface); color: var(--color-ink); border: 1px solid var(--color-rule); border-radius: 0.875rem; box-shadow: 0 18px 40px -12px rgb(8 24 52 / 0.40); animation: pop-in .14s ease-out both; transform-origin: top; }
 }
 @keyframes pop-in { from { opacity: 0; transform: translateY(-4px) scale(.98); } to { opacity: 1; transform: none; } }
+
+/* ───────────────────────── Portal homepage + header ───────────────────────── */
+@theme {
+  --color-night: #0a1b3a;            /* public header, hero, footer */
+  --color-night-2: #07142e;          /* primary navigation row */
+  --color-canvas: var(--canvas);     /* homepage background */
+  --color-line: var(--line);         /* soft blue-gray card borders */
+  --color-accent-bar: #fb7f2c;       /* orange section marker */
+  --color-accent-soft: #ffb27c;      /* carousel progress */
+}
+:root { --canvas: #f8fafd; --line: #e2e8f2; }
+.dark { --canvas: #14243a; --line: #33496a; }
+.hero-progress { animation-name: hero-fill; animation-timing-function: linear; animation-fill-mode: forwards; }
+@keyframes hero-fill { from { transform: scaleX(0); } to { transform: scaleX(1); } }

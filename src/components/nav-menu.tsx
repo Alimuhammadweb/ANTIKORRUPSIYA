@@ -9,9 +9,9 @@ export function NavMenu({ links, home, cats, categoriesLabel, allLabel, allHref 
   const path = usePathname() ?? "", { open, setOpen, ref, onKeyDown, onBlur } = useDropdown();
   const on = (h: string) => (h === home ? path === h : path === h || path.startsWith(`${h}/`));
   const catOn = path.startsWith(`${home}/category`) || path === allHref;
-  const pill = (a: boolean) => `inline-flex items-center gap-2 rounded-lg px-4 py-2.5 text-[14.5px] font-semibold transition-colors ${a ? "bg-brand text-white shadow-[0_4px_14px_-4px_rgb(20_86_214/.7)]" : "text-white/90 hover:bg-white/10 hover:text-white"}`;
+  const pill = (a: boolean) => `inline-flex h-[2.6rem] items-center gap-2.5 whitespace-nowrap rounded-lg px-3 text-[15px] font-semibold transition-colors xl:px-[1.6rem] ${a ? "bg-gradient-to-br from-[#1264e6] to-[#0b469f] text-white shadow-[0_4px_14px_-4px_rgb(20_86_214/.7)]" : "text-white/95 hover:bg-white/10 hover:text-white"}`;
   return (
-    <ul className="flex items-center gap-1">
+    <ul className="flex items-center gap-0.5">
       {links.map((l) => <li key={l.href}><Link href={l.href} aria-current={on(l.href) ? "page" : undefined} className={pill(on(l.href))}>{l.href === home && <Home className="size-[18px]" aria-hidden />}{l.text}</Link></li>)}
       <li><div ref={ref} onKeyDown={onKeyDown} onBlur={onBlur} className="relative">
         <button type="button" data-trigger aria-haspopup="menu" aria-expanded={open} onClick={() => setOpen(!open)} className={pill(catOn || open) + (open && !catOn ? " !bg-white/10" : "")}>{categoriesLabel}<ChevronDown className={`size-4 transition-transform ${open ? "rotate-180" : ""}`} aria-hidden /></button>
@@ -21,6 +21,7 @@ export function NavMenu({ links, home, cats, categoriesLabel, allLabel, allHref 
             <Link href={allHref} role="menuitem" data-item className="mt-1 flex items-center justify-between rounded-lg border-t border-rule px-3 pb-2 pt-3 text-sm font-bold text-brand-ink outline-none hover:underline focus-visible:ring-2 focus-visible:ring-accent">{allLabel} <span aria-hidden>→</span></Link>
           </div>)}
       </div></li>
+      <li aria-hidden className="ml-3 h-6 w-px bg-white/20" />
     </ul>
   );
 }

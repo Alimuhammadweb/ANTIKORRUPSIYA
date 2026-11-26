@@ -14,7 +14,12 @@ export type HomeBlock = { id: number; kind: HomeKind; categoryId: number | null;
 
 async function auto(kind: HomeKind, categoryId: number | null, lang: L, count: number, exclude: number[]): Promise<Item[]> {
   const notIn: Prisma.ArticleWhereInput = exclude.length ? { id: { notIn: exclude } } : {};
-  if (kind === "POPULAR") { const w = await popular(lang, 7, 1, count + exclude.length); const items = w.items.filter((a) => !exclude.includes(a.id)).slice(0, count); return items.length ? items : (await popular(lang, 0, 1, count)).items; }
+  if (kind === "POPULAR") { // this week's most read first; a short list is completed from the all-time most read
+    const fresh = (items: Item[], skip: number[]) => items.filter((a) => !skip.includes(a.id));
+    const recent = fresh((await popular(lang, 7, 1, count + exclude.length)).items, exclude).slice(0, count);
+    const ever = recent.length < count ? fresh((await popular(lang, 0, 1, count * 2 + exclude.length)).items, [...exclude, ...recent.map((a) => a.id)]) : [];
+    const items = [...recent, ...ever].slice(0, count); return items.length ? items : (await popular(lang, 0, 1, count)).items;
+  }
   const extra: Prisma.ArticleWhereInput = { ...(FORMAT[kind] ?? {}), ...(kind === "CATEGORY" && categoryId ? { categoryId } : {}), ...(kind === "HERO" ? { coverId: { not: null } } : {}), ...notIn };
   const sort = kind === "TRENDING" ? "trending" : "new";
   const r = await listArticles(lang, extra, { page: 1, sort, take: count });
@@ -30,6 +35,8 @@ export async function loadHome(lang: L): Promise<HomeBlock[]> {
     let items: Item[] = s.manual && s.picks.length ? (await byIds(lang, s.picks.map((p) => p.articleId))).slice(0, count) : [];
     if (!items.length) items = await auto(s.kind, s.categoryId, lang, count, s.kind === "HERO" ? [] : used);
     if (s.kind === "HERO" && !items.length) items = await auto("HERO", null, lang, count, []).catch(() => []);
+    // These two are homepage columns of their own: show their newest story even if it already appears at the top of the page.
+    if ((s.kind === "INVESTIGATIONS" || s.kind === "ANNOUNCEMENTS") && !items.length) items = await auto(s.kind, s.categoryId, lang, count, []);
     if (s.kind === "HERO" || s.kind === "SECONDARY") used.push(...items.map((a) => a.id));
     out.push({ id: s.id, kind: s.kind, categoryId: s.categoryId, category: s.category, items });
   }

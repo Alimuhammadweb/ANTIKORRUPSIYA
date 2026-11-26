@@ -29,7 +29,7 @@ export function MobileNav({ home, links, cats, allHref, labels, searchAction, ch
       {open && (
         <div className="fixed inset-0 z-[70]" role="dialog" aria-modal="true" aria-label={labels.menu} id="mobile-menu">
           <button type="button" aria-label={labels.close} tabIndex={-1} onClick={() => setOpen(false)} className="fade-in absolute inset-0 bg-black/60 backdrop-blur-[2px]" />
-          <div ref={panel} className="drawer relative flex h-full w-[min(22rem,92vw)] flex-col overflow-y-auto bg-navy text-white shadow-2xl">
+          <div ref={panel} className="drawer relative flex h-full w-[min(22rem,92vw)] flex-col overflow-y-auto bg-night text-white shadow-2xl">
             <div className="flex items-center justify-between border-b border-white/10 px-4 py-3">
               <Link href={home} aria-label="ANTIKORRUPSIYA"><img src="/brand/logo.png" alt="ANTIKORRUPSIYA" className="h-8 w-auto" /></Link>
               <button type="button" data-close onClick={() => setOpen(false)} aria-label={labels.close} className="grid size-10 place-items-center rounded-full hover:bg-white/10"><X className="size-6" aria-hidden /></button>

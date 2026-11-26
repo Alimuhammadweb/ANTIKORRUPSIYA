@@ -36,7 +36,7 @@ export default async function ArticlePage({ params }: P) {
   const popularTags = await db.tag.findMany({ where: { articles: { some: base(lang) } }, orderBy: { articles: { _count: "desc" } }, take: 12 });
   const url = `${SITE_URL}/${lang}/article/${tr.slug}`, img = a.cover ? (a.cover.path.startsWith("http") ? a.cover.path : `${SITE_URL}${a.cover.path}`) : undefined;
   const ld = { "@context": "https://schema.org", "@type": "NewsArticle", headline: tr.title.slice(0, 110), description: tr.description || undefined, inLanguage: tr.lang === "uz" ? "uz-Cyrl" : tr.lang, mainEntityOfPage: url, datePublished: a.publishedAt?.toISOString(), dateModified: a.updatedAt.toISOString(),
-    image: img ? [img] : undefined, author: a.author?.name ? [{ "@type": "Person", name: a.author.name }] : [{ "@type": "Organization", name: "ANTIKORRUPSIYA" }], publisher: { "@type": "Organization", name: "ANTIKORRUPSIYA", logo: { "@type": "ImageObject", url: `${SITE_URL}/brand/logo.png` } } };
+    image: img ? [img] : undefined, author: [{ "@type": "Organization", name: "ANTIKORRUPSIYA" }], publisher: { "@type": "Organization", name: "ANTIKORRUPSIYA", logo: { "@type": "ImageObject", url: `${SITE_URL}/brand/logo.png` } } };
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(ld).replace(/</g, "\\u003c") }} />

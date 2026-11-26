@@ -80,7 +80,8 @@ The whole frontend (public site **and** newsroom CMS) shares one design system; 
 
 - Header: date, social icons, **language dropdown** (`components/lang-switch.tsx`), theme toggle, logo, search, and a sticky nav with a **Categories dropdown** (`components/nav-menu.tsx`; accordion in the mobile drawer). Shared open/close behaviour lives in `components/use-dropdown.ts` (outside click, Escape, arrow keys).
 - Videos and Interviews are not in the public navigation, footer or homepage (the `/videos` and `/interviews` routes and the admin settings are untouched).
-- Homepage: featured slider (`components/hero-slider.tsx`) + latest-news rail, then Popular / Investigations / Announcements cards. To get several slides, set *Articles shown* for "Main featured story" to 2-5 in Admin → Homepage.
+- Homepage: featured carousel (`components/hero-slider.tsx`, 6 s per slide, the progress bar's CSS animation is the timer) + a four-article side list, then three columns: Popular / Investigations / Announcements. The editors' featured picks come first; if there are fewer than four, the newest articles fill the remaining slides. A column with no article of that format shows an empty state.
+- Public article cards and article pages do not show staff names (admin panel and database are unchanged).
 - The admin panel is unchanged: shared CSS was only appended to, and `ThemeToggle` gained an optional prop.
 
 ## Posts and languages (latest change)

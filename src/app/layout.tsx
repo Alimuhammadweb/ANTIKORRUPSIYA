@@ -2,12 +2,12 @@ import type { Metadata, Viewport } from "next";
 import "./globals.css";
 // Self-hosted variable fonts (no build-time download). Both ship latin, latin-ext, cyrillic AND cyrillic-ext, which Uzbek letters (Қ Ғ Ҳ) need.
 import "@fontsource-variable/inter";
-import "@fontsource-variable/source-serif-4";
+import "@fontsource-variable/source-serif-4/opsz.css"; // optical sizes: large headlines get the finer display cut
 import { ThemeProvider } from "next-themes";
 import { SITE_URL } from "@/lib/settings";
 
 export const metadata: Metadata = { metadataBase: new URL(SITE_URL), title: { default: "ANTIKORRUPSIYA", template: "%s" }, icons: { icon: "/brand/logo.png" }, openGraph: { siteName: "ANTIKORRUPSIYA", images: ["/brand/banner.png"] } };
-export const viewport: Viewport = { themeColor: [{ media: "(prefers-color-scheme: light)", color: "#173f75" }, { media: "(prefers-color-scheme: dark)", color: "#14243a" }] };
+export const viewport: Viewport = { themeColor: [{ media: "(prefers-color-scheme: light)", color: "#0a1b3a" }, { media: "(prefers-color-scheme: dark)", color: "#14243a" }] };
 export default function Root({ children }: { children: React.ReactNode }) {
   return (
     <html lang="uz-Cyrl" suppressHydrationWarning>

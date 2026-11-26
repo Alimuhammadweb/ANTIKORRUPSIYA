@@ -35,7 +35,6 @@ export function ArticleView({ a, tr, lang, related = [], url, preview, popularTa
           <h1 className="headline mt-4 text-[2.1rem] !leading-[1.12] !tracking-[-0.02em] sm:text-5xl lg:text-[3.4rem]">{tr.title}</h1>
           {tr.description && <p className="mt-5 font-serif text-xl leading-relaxed text-mute md:text-[1.45rem] md:leading-snug">{tr.description}</p>}
           <div className="mt-7 flex flex-wrap items-center gap-x-5 gap-y-3 border-y border-rule py-4">
-            {a.author?.name && <div className="flex items-center gap-3"><span className="grid size-11 place-items-center rounded-full bg-navy text-base font-bold text-accent ring-2 ring-accent/30" aria-hidden>{a.author.name.trim().charAt(0).toUpperCase()}</span><div className="leading-tight"><p className="text-[11px] font-semibold uppercase tracking-wider text-mute">{t.by}</p><p className="text-sm font-bold">{a.author.name}</p></div></div>}
             <p className="meta !text-[13px] flex flex-wrap gap-x-5 gap-y-2">
               {a.publishedAt && <span className="inline-flex items-center gap-1.5"><CalendarDays className="size-4 opacity-80" aria-hidden />{t.published}: <time dateTime={a.publishedAt.toISOString()}>{fmtDay(a.publishedAt, lang)}</time></span>}
               {edited && <span className="inline-flex items-center gap-1.5"><RefreshCw className="size-4 opacity-80" aria-hidden />{t.updated}: <time dateTime={a.updatedAt.toISOString()}>{fmtDay(a.updatedAt, lang)}</time></span>}

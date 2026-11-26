@@ -2,7 +2,7 @@ import Link from "next/link";
 import { ArrowRight, CalendarDays, ChevronLeft, ChevronRight, Eye, Newspaper, Play } from "lucide-react";
 import { T, fmtDay, fmtViews, loc, type L } from "@/lib/i18n";
 import { slugOf, type Item } from "@/lib/queries";
-import { firstVideo } from "@/lib/blocks";
+import { findNodes, firstVideo } from "@/lib/blocks";
 import { InlineVideo } from "./inline-video";
 
 export const href = (lang: L, a: Item) => `/${lang}/article/${a.translations[0].slug}`;
@@ -11,6 +11,12 @@ export const href = (lang: L, a: Item) => `/${lang}/article/${a.translations[0].
 export function formatLabel(a: Item, lang: L): string | null {
   const t = T[lang];
   return ({ INVESTIGATION: t.fInvestigation, VIDEO: t.fVideo, INTERVIEW: t.fInterview, ANNOUNCEMENT: t.fAnnouncement, PHOTO_NEWS: t.fPhoto, GALLERY: t.fPhoto } as Record<string, string>)[a.format] ?? null;
+}
+/** The article's picture: its cover, otherwise the first photograph inside the article itself. */
+export function imageOf(a: Item): string | undefined {
+  if (a.cover) return a.cover.path;
+  const blocks = a.translations[0]?.blocks;
+  return findNodes(blocks, "image")[0]?.attrs?.src ?? findNodes(blocks, "gallery")[0]?.attrs?.items?.[0]?.src;
 }
 /** Publication date + view count, with icons (as in the portal reference). */
 export function Meta({ a, lang, className = "" }: { a: Item; lang: L; className?: string }) {
@@ -23,10 +29,10 @@ export function Meta({ a, lang, className = "" }: { a: Item; lang: L; className?
 }
 /** Cover image with a graceful artwork fallback, a format badge and an optional play button. Decorative: the headline link names the card. */
 export function Thumb({ a, lang, ratio = "aspect-[3/2]", play, badge = true, className = "", rounded = "rounded-lg" }: { a: Item; lang: L; ratio?: string; play?: boolean; badge?: boolean; className?: string; rounded?: string }) {
-  const label = badge ? formatLabel(a, lang) : null, strong = a.format === "INVESTIGATION";
+  const label = badge ? formatLabel(a, lang) : null, strong = a.format === "INVESTIGATION", src = imageOf(a);
   return (
     <div className={`relative isolate overflow-hidden bg-band ${rounded} ${ratio} ${className}`} aria-hidden>
-      {a.cover ? <img src={a.cover.path} alt="" loading="lazy" decoding="async" className="size-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.04]" />
+      {src ? <img src={src} alt="" loading="lazy" decoding="async" className="size-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.04]" />
         : <div className="art absolute inset-0 grid place-items-center text-white/25"><Newspaper className="size-1/4 min-w-8 max-w-14" strokeWidth={1.25} /></div>}
       {label && <span className={`absolute left-3 top-3 z-[1] inline-flex items-center rounded-md px-2.5 py-1 text-[10.5px] font-bold uppercase leading-none tracking-wider shadow-sm ${strong ? "bg-brand text-white" : "bg-navy/85 text-white backdrop-blur"}`}>{label}</span>}
       {play && <span className="absolute inset-0 z-[1] grid place-items-center bg-gradient-to-t from-black/45 via-transparent to-transparent"><span className="grid size-12 place-items-center rounded-full bg-white/95 pl-0.5 text-navy shadow-lg transition-transform duration-200 group-hover:scale-110"><Play className="size-5 fill-current" /></span></span>}
